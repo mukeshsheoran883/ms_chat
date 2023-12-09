@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "821867387225",
+    "project_id": "ms-chat-d21d3",
+    "storage_bucket": "ms-chat-d21d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821867387225:android:0b1bb35e9bd4a5123a1448",
+        "android_client_info": {
+          "package_name": "com.mukeshsheoran.ms_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNNrUdRrR4nhQBlGwGclo9IakNV8hxyp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

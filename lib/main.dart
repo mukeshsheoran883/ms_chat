@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ms_chat/ms_chat/screen/home_screen.dart';
-
+import 'package:ms_chat/ms_chat/screen/auth/login_screen.dart';
+late Size mq;
 void main() {
   runApp(const MyApp());
 }
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Ms Chat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           color: Colors.blue,
           titleTextStyle: TextStyle(color: Colors.white, fontSize: 22),
           centerTitle: true,
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }
