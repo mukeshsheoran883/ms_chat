@@ -12,7 +12,20 @@
           "package_name": "com.mukeshsheoran.ms_chat"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "821867387225-lm6v5obbsqkrirvlfkdvo9ak9kocqq9t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mukeshsheoran.ms_chat",
+            "certificate_hash": "7d79747dd23fea5652cc5a748a96491946b718ab"
+          }
+        },
+        {
+          "client_id": "821867387225-50uksbsufpr7jsoe3r50td3epkejvo2l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCNNrUdRrR4nhQBlGwGclo9IakNV8hxyp4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "821867387225-50uksbsufpr7jsoe3r50td3epkejvo2l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "821867387225-em983ac3kmeaqboooengfbharpchgm3r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mukeshsheoran.msChat"
+              }
+            }
+          ]
         }
       }
     }

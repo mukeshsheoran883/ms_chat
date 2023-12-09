@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,16 +49,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBzFgTv0LTTnNWpHYPrp51p9eLC5GBMpYY',
-    appId: '1:821867387225:web:3d2da3d622e213193a1448',
-    messagingSenderId: '821867387225',
-    projectId: 'ms-chat-d21d3',
-    authDomain: 'ms-chat-d21d3.firebaseapp.com',
-    storageBucket: 'ms-chat-d21d3.appspot.com',
-    measurementId: 'G-B5YJQJ0M9E',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCNNrUdRrR4nhQBlGwGclo9IakNV8hxyp4',
     appId: '1:821867387225:android:0b1bb35e9bd4a5123a1448',
@@ -67,15 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '821867387225',
     projectId: 'ms-chat-d21d3',
     storageBucket: 'ms-chat-d21d3.appspot.com',
+    androidClientId: '821867387225-lm6v5obbsqkrirvlfkdvo9ak9kocqq9t.apps.googleusercontent.com',
+    iosClientId: '821867387225-em983ac3kmeaqboooengfbharpchgm3r.apps.googleusercontent.com',
     iosBundleId: 'com.mukeshsheoran.msChat',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC-GlH7MJUT4FsaGIGtA3bX0yT0hkWeILQ',
-    appId: '1:821867387225:ios:5a60a69eedbacbe63a1448',
-    messagingSenderId: '821867387225',
-    projectId: 'ms-chat-d21d3',
-    storageBucket: 'ms-chat-d21d3.appspot.com',
-    iosBundleId: 'com.mukeshsheoran.msChat.RunnerTests',
   );
 }
