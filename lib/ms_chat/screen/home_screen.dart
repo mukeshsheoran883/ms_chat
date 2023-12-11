@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
+import 'package:ms_chat/ms_chat/screen/profile_screen.dart';
 import 'package:ms_chat/ms_chat/widgets/chat_user_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,8 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Ms Chat'),
-          leading: Icon(
-            Platform.isIOS ? CupertinoIcons.home : Icons.home,
+          leading: const Icon(
+            CupertinoIcons.home ,
             color: Colors.black,
           ),
           actions: [
@@ -37,7 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return ProfileScreen(user: list[0],);
+                },));
+              },
               icon: const Icon(
                 Icons.more_vert,
                 color: Colors.black,
