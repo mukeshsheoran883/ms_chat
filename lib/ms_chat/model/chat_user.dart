@@ -1,5 +1,5 @@
-class CharUser {
-  CharUser({
+class ChatUser {
+  ChatUser({
     required this.image,
     required this.name,
     required this.about,
@@ -20,16 +20,16 @@ class CharUser {
   late final String email;
   late final String pushToken;
 
-  CharUser.fromJson(Map<String, dynamic> json){
-    image = json['image'];
-    name = json['name'];
-    about = json['about'];
-    createdAt = json['created_at'];
-    isOnline = json['is_online'];
-    id = json['id'];
-    lastActive = json['last_active'];
+  ChatUser.fromJson(Map<String, dynamic> json){
+    image = json['image'] ?? '';
+    name = json['name'] ?? '';
+    about = json['about'] ?? '';
+    createdAt = json['created_at'] ?? '';
+    isOnline = json['is_online'] ?? '';
+    id = json['id'] ?? '';
+    lastActive = json['last_active'] ?? '';
     email = json['email'];
-    pushToken = json['push_token'];
+    pushToken = json['push_token'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

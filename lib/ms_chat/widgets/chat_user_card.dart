@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ms_chat/main.dart';
+import 'package:ms_chat/ms_chat/model/chat_user.dart';
 
 class ChatUserCard extends StatefulWidget {
-  const ChatUserCard({super.key});
+  final ChatUser user;
+  const ChatUserCard({super.key, required this.user});
 
   @override
   State<ChatUserCard> createState() => _ChatUserCardState();
@@ -24,16 +26,16 @@ class _ChatUserCardState extends State<ChatUserCard> {
       ),
       child: InkWell(
         onTap: () {},
-        child: const ListTile(
-          leading: CircleAvatar(
+        child: ListTile(
+          leading: const CircleAvatar(
             child: Icon(Icons.person),
           ),
-          title: Text('User'),
+          title: Text(widget.user.name),
           subtitle: Text(
-            'massage',
+            widget.user.about,
             maxLines: 1,
           ),
-          trailing: Text(
+          trailing: const Text(
             '12:00 PM',
             style: TextStyle(color: Colors.black54),
           ),

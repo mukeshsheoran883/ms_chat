@@ -1,11 +1,12 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
+import 'package:ms_chat/ms_chat/model/chat_user.dart';
+import 'package:ms_chat/ms_chat/widgets/chat_user_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final list = [];
+  List<ChatUser> list = [];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -53,34 +55,42 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Icon(Icons.add_comment),
           ),
         ),
-        body: StreamBuilder(
+        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: APIs.fireStore.collection('users').snapshots(),
           builder: (context, snapshot) {
-            switch(snapshot.connectionState){
+            switch (snapshot.connectionState) {
               case ConnectionState.waiting:
               case ConnectionState.none:
-                return const Center(child: CircularProgressIndicator(),);
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               case ConnectionState.active:
               case ConnectionState.done:
-
-
                 final data = snapshot.data?.docs;
-                for (var i in data!) {
-                  log('Data: ${jsonEncode(i.data())}');
-                  list.add(i.data()['name'],);
+                list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
+                    [];
+
+                if (list.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: list.length,
+                    padding: EdgeInsets.only(top: mq.height * .01),
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return ChatUserCard(
+                        user: list[index],
+                      );
+                      // return Text('Name:${list[index]} ');
+                    },
+                  );
+                } else {
+                  return const Center(
+                    child: Text(
+                      'No Connections Found!',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  );
                 }
-
-              return ListView.builder(
-                itemCount: list.length,
-                padding: EdgeInsets.only(top: mq.height * .01),
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  // return ChatUserCard();
-                  return Text('Name:${list[index]} ');
-                },
-              );
             }
-
           },
         ),
       ),

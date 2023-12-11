@@ -34,20 +34,37 @@ class _LoginScreenState extends State<LoginScreen> {
   //   await GoogleSignIn().signOut();
   // }
 
+  // handles google login button click
   _handleGoogleBtnClick() {
+    // for showing progress bar
     Dialogs.showProgressBar(context);
     _signInWithGoogle().then(
-      (user) {
+      (user) async {
+        // for hiding progress bar
         Navigator.pop(context);
         if (user != null) {
           log("\nUser: ${user.user}");
           log("\nUserAdditionalUserInfo: ${user.additionalUserInfo}");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const HomeScreen(),
-            ),
-          );
+
+          if (await APIs.userExists()) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const HomeScreen(),
+              ),
+            );
+          } else {
+            await APIs.createUser().then(
+              (value) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const HomeScreen(),
+                  ),
+                );
+              },
+            );
+          }
         }
       },
     );
