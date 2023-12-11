@@ -1,9 +1,8 @@
 import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ms_chat/main.dart';
+import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/screen/auth/login_screen.dart';
 import 'package:ms_chat/ms_chat/screen/home_screen.dart';
 
@@ -22,10 +21,10 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         SystemChrome.setSystemUIOverlayStyle(
-            const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-        if(FirebaseAuth.instance.currentUser != null){
-          log("\nUser: ${FirebaseAuth.instance.currentUser}");
-          log("\nUserAdditionalUserInfo: ${FirebaseAuth.instance.currentUser}");
+          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+        );
+        if (APIs.auth.currentUser != null) {
+          log("\nUser: ${APIs.auth.currentUser}");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -34,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
               },
             ),
           );
-        }else{
+        } else {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -44,7 +43,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           );
         }
-
       },
     );
 
@@ -69,14 +67,15 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Image.asset('assets/images/chating.png'),
             ),
             Positioned(
-                bottom: mq.height * .15,
-                width: mq.width,
-                child: const Text(
-                  textAlign: TextAlign.center,
-                  "MADE IN INDIA WITH ❤️",
-                  style: TextStyle(
-                      fontSize: 16, color: Colors.black87, letterSpacing: .5),
-                )),
+              bottom: mq.height * .15,
+              width: mq.width,
+              child: const Text(
+                textAlign: TextAlign.center,
+                "MADE IN INDIA WITH ❤️",
+                style: TextStyle(
+                    fontSize: 16, color: Colors.black87, letterSpacing: .5),
+              ),
+            ),
           ],
         ),
       ),

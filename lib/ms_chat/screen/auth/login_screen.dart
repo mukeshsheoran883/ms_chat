@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
+import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/screen/home_screen.dart';
 
 import '../../helper/dialogs.dart';
@@ -36,19 +36,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _handleGoogleBtnClick() {
     Dialogs.showProgressBar(context);
-    _signInWithGoogle().then((user) {
-      Navigator.pop(context);
-      if (user != null) {
-        log("\nUser: ${user.user}");
-        log("\nUserAdditionalUserInfo: ${user.additionalUserInfo}");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const HomeScreen(),
-          ),
-        );
-      }
-    });
+    _signInWithGoogle().then(
+      (user) {
+        Navigator.pop(context);
+        if (user != null) {
+          log("\nUser: ${user.user}");
+          log("\nUserAdditionalUserInfo: ${user.additionalUserInfo}");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const HomeScreen(),
+            ),
+          );
+        }
+      },
+    );
   }
 
   Future<UserCredential?> _signInWithGoogle() async {
@@ -68,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      return await APIs.auth.signInWithCredential(credential);
     } catch (e) {
       log("\n_signInWithGoogle: $e");
       Dialogs.showSnackbar(context, 'Something Went Wrong (Check Internet!)');
@@ -101,7 +103,8 @@ class _LoginScreenState extends State<LoginScreen> {
               height: mq.height * .05,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreenAccent[200]),
+                  backgroundColor: Colors.lightGreenAccent[200],
+                ),
                 onPressed: () {
                   _handleGoogleBtnClick();
                 },
@@ -113,8 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       TextSpan(text: 'Login with '),
                       TextSpan(
-                          text: 'Google',
-                          style: TextStyle(fontWeight: FontWeight.w500))
+                        text: 'Google',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
                 ),

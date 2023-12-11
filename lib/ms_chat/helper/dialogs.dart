@@ -5,14 +5,22 @@ class Dialogs {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: Colors.blue.withOpacity(.8),behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.blue.withOpacity(.8),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  static void showProgressBar(BuildContext context,) {
-    showDialog(context: context, builder: (context) {
-      return const Center(child: CircularProgressIndicator());
-    },);
+  static void showProgressBar(
+    BuildContext context,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }
