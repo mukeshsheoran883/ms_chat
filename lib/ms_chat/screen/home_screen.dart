@@ -19,6 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ChatUser> list = [];
 
   @override
+  void initState() {
+    APIs.getSelfInfo();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -39,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ProfileScreen(user: list[0],);
+                  return ProfileScreen(user: APIs.me,);
                 },));
               },
               icon: const Icon(
@@ -60,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: APIs.fireStore.collection('users').snapshots(),
+          stream: APIs.getAllUsers(),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:

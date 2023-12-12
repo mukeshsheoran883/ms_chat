@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
+import 'package:ms_chat/ms_chat/helper/dialogs.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
+import 'package:ms_chat/ms_chat/screen/auth/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -27,8 +29,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.all(16.0),
           child: FloatingActionButton.extended(
             onPressed: () async {
-              await APIs.auth.signOut();
-              await GoogleSignIn().signOut();
+              Dialogs.showProgressBar(context);
+              await APIs.auth.signOut().then(
+                (value) async {
+                  await GoogleSignIn().signOut().then(
+                    (value) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const LoginScreen();
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
             },
             icon: const Icon(Icons.logout),
             label: const Text("Logout"),
@@ -43,19 +62,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: mq.height * .05,
               ),
               // user profile picture
-              ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  mq.height * 0.1,
-                ),
-                child: CachedNetworkImage(
-                  width: mq.height * 0.2,
-                  height: mq.height * 0.2,
-                  fit: BoxFit.fill,
-                  imageUrl: widget.user.image,
-                  errorWidget: (context, url, error) => const CircleAvatar(
-                    child: Icon(CupertinoIcons.person),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      mq.height * 0.1,
+                    ),
+                    child: CachedNetworkImage(
+                      width: mq.height * 0.2,
+                      height: mq.height * 0.2,
+                      fit: BoxFit.fill,
+                      imageUrl: widget.user.image,
+                      errorWidget: (context, url, error) => const CircleAvatar(
+                        child: Icon(CupertinoIcons.person),
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: MaterialButton(
+                      elevation: 1,
+                      onPressed: () {},
+                      shape: const CircleBorder(),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  )
+                ],
               ),
               SizedBox(
                 height: mq.height * .03,
@@ -108,8 +144,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   minimumSize: Size(mq.width * .5, mq.height * 0.06),
                 ),
                 onPressed: () {},
-                icon: const Icon(Icons.edit,size: 28,),
-                label: const Text('UPDATE',style: TextStyle(fontSize: 16),),
+                icon: const Icon(
+                  Icons.edit,
+                  size: 28,
+                ),
+                label: const Text(
+                  'UPDATE',
+                  style: TextStyle(fontSize: 16),
+                ),
               )
             ],
           ),
