@@ -255,12 +255,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Pick an image.
                     final XFile? image = await picker.pickImage(
                       source: ImageSource.gallery,
+                      imageQuality: 80,
                     );
                     if (image != null) {
                       log('Image Path: ${image.path}  MimeType: ${image.mimeType}');
-                      setState(() {
-                        _image = image.path;
-                      });
+                      setState(
+                        () {
+                          _image = image.path;
+                        },
+                      );
+                      APIs.updateProfilePicture(
+                        File(_image!),
+                      );
                       Navigator.pop(context);
                     }
                   },
@@ -282,12 +288,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Pick an image.
                     final XFile? image = await picker.pickImage(
                       source: ImageSource.camera,
+                      imageQuality: 80,
                     );
                     if (image != null) {
                       log('Image Path: ${image.path}');
-                      setState(() {
-                        _image = image.path;
-                      });
+                      setState(
+                        () {
+                          _image = image.path;
+                        },
+                      );
+                      APIs.updateProfilePicture(
+                        File(_image!),
+                      );
                       Navigator.pop(context);
                     }
                   },

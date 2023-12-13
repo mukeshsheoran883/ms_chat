@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,34 +43,70 @@ class APIs {
   static Future<void> createUser() async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final chatUser = ChatUser(
-        image: user.photoURL.toString(),
-        name: user.displayName.toString(),
-        about: "Hey I'm using Ms Chat!",
-        createdAt: time,
-        isOnline: false,
-        id: user.uid,
-        lastActive: time,
-        email: user.email.toString(),
-        pushToken: '');
-    return await fireStore
-        .collection('users')
-        .doc(user.uid)
-        .set(chatUser.toJson());
+      image: user.photoURL.toString(),
+      name: user.displayName.toString(),
+      about: "Hey I'm using Ms Chat!",
+      createdAt: time,
+      isOnline: false,
+      id: user.uid,
+      lastActive: time,
+      email: user.email.toString(),
+      pushToken: '',
+    );
+    return await fireStore.collection('users').doc(user.uid).set(
+          chatUser.toJson(),
+        );
   }
 
   // for getting all users from fireStore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
     return fireStore
         .collection('users')
-        .where('id', isNotEqualTo: user.uid)
+        .where(
+          'id',
+          isNotEqualTo: user.uid,
+        )
         .snapshots();
   }
 
   // for updating user information
   static Future<void> updateUserInfo() async {
-    await fireStore.collection('users').doc(user.uid).update({
-      'name': me.name,
-      'about': me.about,
-    });
+    await fireStore.collection('users').doc(user.uid).update(
+      {
+        'name': me.name,
+        'about': me.about,
+      },
+    );
+  }
+
+  // update profile picture of user
+  static Future<void> updateProfilePicture(File file) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+    log(
+      'Extension: $ext',
+    );
+    //storage file ref with path
+    final ref = storage.ref().child(
+          'profile_pictures/${user.uid}.$ext',
+        );
+    //uploading image
+    await ref
+        .putFile(
+      file,
+      SettableMetadata(contentType: 'image/$ext'),
+    )
+        .then(
+      (p0) {
+        log('Data Transferred : ${p0.bytesTransferred / 1000} kb');
+      },
+    );
+    // updating image in fireStore database
+    me.image = await ref.getDownloadURL();
+    await fireStore.collection('users').doc(user.uid).update(
+      {
+        'image': me.image,
+      },
+    );
   }
 }
