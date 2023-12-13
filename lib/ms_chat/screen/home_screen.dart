@@ -16,7 +16,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ChatUser> list = [];
+  List<ChatUser> _list = [];
+  final List<ChatUser> _searchList = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -29,24 +31,58 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Ms Chat'),
+          title: _isSearching
+              ? TextField(
+                  decoration: InputDecoration(
+                      border: InputBorder.none, hintText: 'Name, Email'),
+                  autofocus: true,
+                  style: TextStyle(fontSize: 17, letterSpacing: 2),
+                  //when search text changes the updated search list
+                  onChanged: (val) {
+                    // search logic
+                    _searchList.clear();
+                    for (var i in _list) {
+                      if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                          i.email.toLowerCase().contains(val.toLowerCase())) {
+                        _searchList.add(i);
+                      }
+                      setState(() {
+                        _searchList;
+                      });
+                    }
+                  },
+                )
+              : const Text('Ms Chat'),
           leading: const Icon(
-            CupertinoIcons.home ,
+            CupertinoIcons.home,
             color: Colors.black,
           ),
           actions: [
             IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.search,
+              onPressed: () {
+                setState(() {
+                  _isSearching = !_isSearching;
+                });
+              },
+              icon: Icon(
+                _isSearching
+                    ? CupertinoIcons.clear_circled_solid
+                    : Icons.search,
                 color: Colors.black,
               ),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ProfileScreen(user: APIs.me,);
-                },));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ProfileScreen(
+                        user: APIs.me,
+                      );
+                    },
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.more_vert,
@@ -77,17 +113,18 @@ class _HomeScreenState extends State<HomeScreen> {
               case ConnectionState.active:
               case ConnectionState.done:
                 final data = snapshot.data?.docs;
-                list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
-                    [];
+                _list =
+                    data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
+                        [];
 
-                if (list.isNotEmpty) {
+                if (_list.isNotEmpty) {
                   return ListView.builder(
-                    itemCount: list.length,
+                    itemCount: _isSearching ? _searchList.length : _list.length,
                     padding: EdgeInsets.only(top: mq.height * .01),
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ChatUserCard(
-                        user: list[index],
+                        user: _isSearching ? _searchList[index] : _list[index],
                       );
                       // return Text('Name:${list[index]} ');
                     },

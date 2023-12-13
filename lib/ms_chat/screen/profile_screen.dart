@@ -163,10 +163,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         minimumSize: Size(mq.width * .5, mq.height * 0.06),
                       ),
                       onPressed: () {
-                        if(_formkey.currentState!.validate()){
+                        if (_formkey.currentState!.validate()) {
                           _formkey.currentState!.save();
-                          APIs.updateUserInfo().then((value){
-                            Dialogs.showSnackbar(context, 'Profile Updated Successfully');
+                          APIs.updateUserInfo().then((value) {
+                            Dialogs.showSnackbar(
+                                context, 'Profile Updated Successfully');
                           });
                           log('inside validator');
                         }
