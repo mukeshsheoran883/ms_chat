@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # For picking images
+  image_picker: ^1.0.5
+
   # For using cupertino icons
   cupertino_icons: ^1.0.6
 

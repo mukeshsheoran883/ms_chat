@@ -1,9 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/helper/dialogs.dart';
@@ -21,6 +23,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  String? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -74,21 +77,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // user profile picture
                     Stack(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            mq.height * 0.1,
-                          ),
-                          child: CachedNetworkImage(
-                            width: mq.height * 0.2,
-                            height: mq.height * 0.2,
-                            fit: BoxFit.fill,
-                            imageUrl: widget.user.image,
-                            errorWidget: (context, url, error) =>
-                                const CircleAvatar(
-                              child: Icon(CupertinoIcons.person),
-                            ),
-                          ),
-                        ),
+                        _image != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  mq.height * 0.1,
+                                ),
+                                // local image
+                                child: Image.file(
+                                  File(_image!),
+                                  width: mq.height * 0.2,
+                                  height: mq.height * 0.2,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  mq.height * 0.1,
+                                ),
+                                child: CachedNetworkImage(
+                                  width: mq.height * 0.2,
+                                  height: mq.height * 0.2,
+                                  fit: BoxFit.cover,
+                                  imageUrl: widget.user.image,
+                                  errorWidget: (context, url, error) =>
+                                      const CircleAvatar(
+                                    child: Icon(CupertinoIcons.person),
+                                  ),
+                                ),
+                              ),
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -234,7 +250,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mq.height * .15,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    // Pick an image.
+                    final XFile? image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (image != null) {
+                      log('Image Path: ${image.path}  MimeType: ${image.mimeType}');
+                      setState(() {
+                        _image = image.path;
+                      });
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Image.asset(
                     'assets/images/image12.png',
                   ),
@@ -248,7 +277,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mq.height * .15,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    // Pick an image.
+                    final XFile? image = await picker.pickImage(
+                      source: ImageSource.camera,
+                    );
+                    if (image != null) {
+                      log('Image Path: ${image.path}');
+                      setState(() {
+                        _image = image.path;
+                      });
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Image.asset(
                     'assets/images/camera.png',
                   ),
