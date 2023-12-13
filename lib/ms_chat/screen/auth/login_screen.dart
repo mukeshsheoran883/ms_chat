@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               width: mq.width * .5,
               right: _isAnimate ? mq.width * .25 : -mq.width * .5,
               duration: const Duration(seconds: 1),
-              child: Image.asset('assets/images/chating.png'),
+              child: Image.asset('assets/images/cheating.png'),
             ),
             Positioned(
               bottom: mq.height * .15,

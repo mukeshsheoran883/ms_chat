@@ -20,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _formkey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           body: Form(
-            key: _formkey,
+            key: _formKey,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: mq.width * .05),
               child: SingleChildScrollView(
@@ -94,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           right: 0,
                           child: MaterialButton(
                             elevation: 1,
-                            onPressed: () {},
+                            onPressed: () {
+                              _showBottomSheet();
+                            },
                             shape: const CircleBorder(),
                             child: const Icon(
                               Icons.edit,
@@ -163,8 +165,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         minimumSize: Size(mq.width * .5, mq.height * 0.06),
                       ),
                       onPressed: () {
-                        if (_formkey.currentState!.validate()) {
-                          _formkey.currentState!.save();
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
                           APIs.updateUserInfo().then((value) {
                             Dialogs.showSnackbar(
                                 context, 'Profile Updated Successfully');
@@ -188,6 +190,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // bottom sheet for picking a profile picture for user
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.only(
+            top: mq.height * 0.03,
+            bottom: mq.height * 0.05,
+          ),
+          children: [
+            const Text(
+              'Pick Profile Picture',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(
+              height: mq.height * .02,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    fixedSize: Size(
+                      mq.width * .3,
+                      mq.height * .15,
+                    ),
+                  ),
+                  onPressed: () {},
+                  child: Image.asset(
+                    'assets/images/image12.png',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    fixedSize: Size(
+                      mq.width * .3,
+                      mq.height * .15,
+                    ),
+                  ),
+                  onPressed: () {},
+                  child: Image.asset(
+                    'assets/images/camera.png',
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 }

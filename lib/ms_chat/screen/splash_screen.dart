@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+          const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white,),
         );
         if (APIs.auth.currentUser != null) {
           log("\nUser: ${APIs.auth.currentUser}");
@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
               top: mq.height * .15,
               width: mq.width * .5,
               right: mq.width * .25,
-              child: Image.asset('assets/images/chating.png'),
+              child: Image.asset('assets/images/cheating.png'),
             ),
             Positioned(
               bottom: mq.height * .15,
