@@ -22,6 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
+        body: Column(
+          children: [
+            _chatInput(),
+          ],
+        ),
       ),
     );
   }
@@ -29,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   //app bar
   Widget _appBar() {
     return InkWell(
-      onTap: (){},
+      onTap: () {},
       child: Row(
         children: [
           // back button
@@ -57,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-      
+
           const SizedBox(
             width: 10,
           ),
@@ -86,6 +91,88 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               )
             ],
+          )
+        ],
+      ),
+    );
+  }
+
+  // bottom chat input field
+  Widget _chatInput() {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: mq.height * .01,
+        horizontal: mq.width * .025,
+      ),
+      child: Row(
+        children: [
+          // input field & buttons
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
+                children: [
+                  // emoji button
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.emoji_emotions,
+                      color: Colors.blueAccent,
+                      size: 25,
+                    ),
+                  ),
+
+                  const Expanded(
+                      child: TextField(
+                        keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                        hintText: "Type Something...",
+                        hintStyle: TextStyle(color: Colors.blueAccent),
+                        border: InputBorder.none),
+                  )),
+
+                  // pick image from gallery  button
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.image,
+                      color: Colors.blueAccent,
+                      size: 26,
+                    ),
+                  ),
+
+                  // take image from camera button
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.blueAccent,
+                      size: 26,
+                    ),
+                  ),
+
+                  SizedBox(width: mq.width * .02,)
+                ],
+              ),
+            ),
+          ),
+
+          // send message button
+          MaterialButton(
+            onPressed: () {},
+            minWidth: 0,
+            padding:
+                const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
+            shape: CircleBorder(),
+            color: Colors.green,
+            child: Icon(
+              Icons.send,
+              color: Colors.white,
+              size: 28,
+            ),
           )
         ],
       ),
