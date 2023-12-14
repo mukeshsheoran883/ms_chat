@@ -109,4 +109,12 @@ class APIs {
       },
     );
   }
+  /// ******* Chat Screen Related APIs ********
+
+  // for getting all users from fireStore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
+    return fireStore
+        .collection('messages')
+        .snapshots();
+  }
 }
