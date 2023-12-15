@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
+import 'package:ms_chat/ms_chat/helper/my_date_util.dart';
 import 'package:ms_chat/ms_chat/model/message.dart';
 
 class MessageCard extends StatefulWidget {
@@ -22,6 +25,12 @@ class _MessageCardState extends State<MessageCard> {
 
   // sender or another user message
   Widget _blueMessage() {
+
+    //update last read message if sender and receiver are different
+    if(widget.message.read.isEmpty){
+      APIs.updateMessageReadStatus(widget.message);
+      log('message read updated');
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -52,7 +61,10 @@ class _MessageCardState extends State<MessageCard> {
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
           child: Text(
-            widget.message.sent,
+            MyDateUtil.getFormattedTime(
+              context: context,
+              time: widget.message.sent,
+            ),
             style: const TextStyle(
               fontSize: 13,
               color: Colors.black54,
@@ -68,18 +80,29 @@ class _MessageCardState extends State<MessageCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
         // message time
         Row(
           children: [
             // double tick blue icon for message read
-SizedBox(width: mq.width * .04,),
-            const Icon(Icons.done_all_rounded,color: Colors.blue,size: 20,),
+            SizedBox(
+              width: mq.width * .04,
+            ),
+            if (widget.message.read.isNotEmpty)
+              const Icon(
+                Icons.done_all_rounded,
+                color: Colors.blue,
+                size: 20,
+              ),
             // for adding some space
-            const SizedBox(width: 2,),
-            // read time
+            const SizedBox(
+              width: 2,
+            ),
+            // sent time
             Text(
-              '${widget.message.read}sfd',
+              MyDateUtil.getFormattedTime(
+                context: context,
+                time: widget.message.sent,
+              ),
               style: const TextStyle(
                 fontSize: 13,
                 color: Colors.black54,
@@ -101,8 +124,7 @@ SizedBox(width: mq.width * .04,),
                   topLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 )),
-            child:
-            Text(
+            child: Text(
               widget.message.msg,
               style: const TextStyle(
                 fontSize: 15,

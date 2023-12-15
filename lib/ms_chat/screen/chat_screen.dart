@@ -17,6 +17,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  
   // for storing all messages
   List<Message> _list = [];
 
