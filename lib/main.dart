@@ -12,7 +12,7 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ],
   ).then((value) {
     _initializeFirebase();

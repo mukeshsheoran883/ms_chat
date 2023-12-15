@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/screen/home_screen.dart';
-
 import '../../helper/dialogs.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -45,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user != null) {
           log("\nUser: ${user.user}");
           log("\nUserAdditionalUserInfo: ${user.additionalUserInfo}");
-
           if (await APIs.userExists()) {
             Navigator.pushReplacement(
               context,

@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
+import 'package:ms_chat/ms_chat/model/message.dart';
+import 'package:ms_chat/ms_chat/widgets/message_card.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser user;
@@ -18,6 +21,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  // for storing all messages
+  List<Message> _list = [];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,11 +32,12 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
+        backgroundColor: Color.fromARGB(255, 234, 248, 255),
         body: Column(
           children: [
             Expanded(
-              child: StreamBuilder(
-                 stream: APIs.getAllMessages(),
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: APIs.getAllMessages(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -46,16 +53,30 @@ class _ChatScreenState extends State<ChatScreen> {
                       //     ?.map((e) => ChatUser.fromJson(e.data()))
                       //     .toList() ??
                       //     [];
-                      final _list = [];
+                      _list.clear();
+                      _list.add(Message(
+                          msg: 'hi',
+                          toId: 'xyz',
+                          read: '',
+                          type: Type.text,
+                          sent: '12:00 AM',
+                          fromId: APIs.user.uid));
+                      _list.add(Message(
+                          msg: 'hello',
+                          toId: APIs.user.uid,
+                          read: '',
+                          type: Type.text,
+                          sent: '12:05 AM',
+                          fromId: 'xyz'));
                       if (_list.isNotEmpty) {
                         return ListView.builder(
-                          itemCount:
-                           _list.length,
+                          itemCount: _list.length,
                           padding: EdgeInsets.only(top: mq.height * .01),
                           physics: const BouncingScrollPhysics(),
                           itemBuilder: (context, index) {
-
-                            return Text('Message: ${_list[index]} ');
+                            return MessageCard(
+                              message: _list[index],
+                            );
                           },
                         );
                       } else {
@@ -172,7 +193,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   const Expanded(
                       child: TextField(
-                        keyboardType: TextInputType.multiline,
+                    keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
                         hintText: "Type Something...",
@@ -200,7 +221,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
 
-                  SizedBox(width: mq.width * .02,)
+                  SizedBox(
+                    width: mq.width * .02,
+                  )
                 ],
               ),
             ),
