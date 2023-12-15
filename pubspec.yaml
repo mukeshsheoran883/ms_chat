@@ -60,11 +60,11 @@ dependencies:
 
   # For using launcher icons
 flutter_launcher_icons:
-  android: "ic_launcher"
+  android: true
   ios: true
   image_path: "assets/images/cheating.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
-
+  remove_alpha_ios: true
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2

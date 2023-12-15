@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ms_chat/main.dart';
@@ -24,6 +20,9 @@ class _ChatScreenState extends State<ChatScreen> {
   // for storing all messages
   List<Message> _list = [];
 
+  // for handling message text changes
+  final _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,42 +31,25 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
-        backgroundColor: Color.fromARGB(255, 234, 248, 255),
+        backgroundColor: const Color.fromARGB(255, 234, 248, 255),
         body: Column(
           children: [
             Expanded(
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: APIs.getAllMessages(),
+              child: StreamBuilder(
+                stream: APIs.getAllMessages(widget.user),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const SizedBox();
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data?.docs;
-                      log('Data: ${jsonEncode(data![0].data())}');
-                      // _list = data
-                      //     ?.map((e) => ChatUser.fromJson(e.data()))
-                      //     .toList() ??
-                      //     [];
-                      _list.clear();
-                      _list.add(Message(
-                          msg: 'hi',
-                          toId: 'xyz',
-                          read: '',
-                          type: Type.text,
-                          sent: '12:00 AM',
-                          fromId: APIs.user.uid));
-                      _list.add(Message(
-                          msg: 'hello',
-                          toId: APIs.user.uid,
-                          read: '',
-                          type: Type.text,
-                          sent: '12:05 AM',
-                          fromId: 'xyz'));
+                      _list = data
+                              ?.map((e) => Message.fromJson(e.data()))
+                              .toList() ??
+                          [];
+
                       if (_list.isNotEmpty) {
                         return ListView.builder(
                           itemCount: _list.length,
@@ -191,11 +173,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
 
-                  const Expanded(
+                  Expanded(
                       child: TextField(
+                    controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText: "Type Something...",
                         hintStyle: TextStyle(color: Colors.blueAccent),
                         border: InputBorder.none),
@@ -231,13 +214,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
           // send message button
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              if (_textController.text.isNotEmpty) {
+                APIs.sendMessage(
+                  widget.user,
+                  _textController.text,
+                );
+                _textController.text = '';
+              }
+            },
             minWidth: 0,
             padding:
                 const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
-            shape: CircleBorder(),
+            shape: const CircleBorder(),
             color: Colors.green,
-            child: Icon(
+            child: const Icon(
               Icons.send,
               color: Colors.white,
               size: 28,
