@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
@@ -25,9 +26,8 @@ class _MessageCardState extends State<MessageCard> {
 
   // sender or another user message
   Widget _blueMessage() {
-
     //update last read message if sender and receiver are different
-    if(widget.message.read.isEmpty){
+    if (widget.message.read.isEmpty) {
       APIs.updateMessageReadStatus(widget.message);
       log('message read updated');
     }
@@ -36,7 +36,7 @@ class _MessageCardState extends State<MessageCard> {
       children: [
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image ? mq.width * .03 : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
@@ -48,11 +48,28 @@ class _MessageCardState extends State<MessageCard> {
                   topRight: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 )),
-            child: Text(
-              widget.message.msg,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black87,
+            child: widget.message.type == Type.text
+            // show text
+                ? Text(
+                    widget.message.msg,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                  )
+            // show image
+                : ClipRRect(
+              borderRadius: BorderRadius.circular(
+                  15
+              ),
+              child: CachedNetworkImage(
+                imageUrl: widget.message.msg,
+                placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2,),
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.image,
+                  size: 70,
+                ),
               ),
             ),
           ),
@@ -112,7 +129,7 @@ class _MessageCardState extends State<MessageCard> {
         ),
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image  ? mq.width * 0.03 : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
@@ -124,11 +141,28 @@ class _MessageCardState extends State<MessageCard> {
                   topLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 )),
-            child: Text(
+            child:  widget.message.type == Type.text
+            // show text
+                ? Text(
               widget.message.msg,
               style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
+              ),
+            )
+            // show image
+                : ClipRRect(
+              borderRadius: BorderRadius.circular(
+                15
+              ),
+              child: CachedNetworkImage(
+                imageUrl: widget.message.msg,
+                placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2,),
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.image,
+                  size: 70,
+                ),
               ),
             ),
           ),

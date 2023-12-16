@@ -275,6 +275,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'assets/images/image12.png',
                   ),
                 ),
+
+                // take picture from camera button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
