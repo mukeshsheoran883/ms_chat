@@ -28,8 +28,9 @@ class _ChatScreenState extends State<ChatScreen> {
   // for handling message text changes
   final _textController = TextEditingController();
 
-  // for storing value for showing or hiding emoji
-  bool _showEmoji = false;
+  // for storing -- for storing value of showing or hiding emoji
+  //isUploading -- for checking if image is uploading or not?
+  bool _showEmoji = false, _isUploasing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                           if (_list.isNotEmpty) {
                             return ListView.builder(
+                              reverse: true,
                               itemCount: _list.length,
                               padding: EdgeInsets.only(
                                 top: mq.height * .01,
@@ -110,6 +112,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+
+                // progress indicator for showing uploading
+                if(_isUploasing)
+                const Align(
+                  alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                      child: CircularProgressIndicator(strokeWidth: 2,),
+                    )),
+
+                // chat input filed
                 _chatInput(),
 
                 // show emojis on keyboard emoji button click & vice versa
@@ -262,7 +275,29 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   // pick image from gallery  button
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+
+                      // Picking multiple images
+                      final List<XFile> images = await picker.pickMultiImage(
+
+                        imageQuality: 70,
+                      );
+                      // uploading & sending image one by one
+                      for(var i in images){
+                        log('Image Path: ${i.path}');
+                        setState(
+                              () => _isUploasing = true,
+                        );
+                        await APIs.sendChatImage(
+                          widget.user,
+                          File(i.path),
+                        );
+                        setState(
+                              () => _isUploasing = false,
+                        );
+                      }
+                    },
                     icon: const Icon(
                       Icons.image,
                       color: Colors.blueAccent,
@@ -282,15 +317,20 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                       if (image != null) {
                         log('Image Path: ${image.path}');
-
+                        setState(
+                              () => _isUploasing = true,
+                        );
                        await APIs.sendChatImage(
                           widget.user,
                           File(image.path),
                         );
+                        setState(
+                              () => _isUploasing = false,
+                        );
                       }
                     },
                     icon: const Icon(
-                      Icons.camera_alt_outlined,
+                      Icons.camera_alt_rounded,
                       color: Colors.blueAccent,
                       size: 26,
                     ),

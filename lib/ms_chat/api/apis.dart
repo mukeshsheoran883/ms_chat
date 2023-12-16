@@ -121,11 +121,12 @@ class APIs {
       ? "${user.uid}_$id"
       : '${id}_${user.uid}';
 
-  // for getting all users from fireStore database
+  // for getting all messages of a specific conversation  from fireStore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
       ChatUser user) {
     return fireStore
         .collection('chats/${getConversationId(user.id)}/messages/')
+        .orderBy('sent', descending: true)
         .snapshots();
   }
 

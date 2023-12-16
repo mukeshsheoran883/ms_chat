@@ -80,16 +80,23 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
                 //last message
                 subtitle: Text(
-                  _message != null ? _message!.msg : widget.user.about,
+                  _message != null ?
+
+                      _message!.type == Type.image ?
+                          'image'
+                          :
+                  _message!.msg
+
+                      : widget.user.about,
                   maxLines: 1,
                 ),
 
                 // last massage time
                 trailing: _message == null
-                    ? null  // show nothing when no message is sent
+                    ? null // show nothing when no message is sent
                     : _message!.read.isEmpty &&
                             _message!.fromId != APIs.user.uid
-                //show for unread message
+                        //show for unread message
                         ? Container(
                             width: 15,
                             height: 15,
@@ -98,9 +105,9 @@ class _ChatUserCardState extends State<ChatUserCard> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           )
-                //message sent time
+                        //message sent time
                         : Text(
-                  MyDateUtil.getLastMessageTime(
+                            MyDateUtil.getLastMessageTime(
                                 context: context, time: _message!.sent),
                             style: const TextStyle(color: Colors.black54),
                           ),
