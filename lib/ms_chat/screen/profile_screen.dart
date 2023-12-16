@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -25,7 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _image;
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -40,13 +40,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton.extended(
               onPressed: () async {
+                //for showing progress dialog
                 Dialogs.showProgressBar(context);
+
+                await APIs.updateActiveStatus(false);
+
+                //sign out from app
                 await APIs.auth.signOut().then(
                   (value) async {
                     await GoogleSignIn().signOut().then(
                       (value) {
+                        // for hiding progress dialog
                         Navigator.pop(context);
+
+                        // for moving to home screen
                         Navigator.pop(context);
+
+                        APIs.auth = FirebaseAuth.instance;
+
+                        // replacing home screen with login screen
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

@@ -11,6 +11,7 @@ import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/helper/my_date_util.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
 import 'package:ms_chat/ms_chat/model/message.dart';
+import 'package:ms_chat/ms_chat/screen/view_profile_screen.dart';
 import 'package:ms_chat/ms_chat/widgets/message_card.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -159,7 +160,15 @@ class _ChatScreenState extends State<ChatScreen> {
   //app bar
   Widget _appBar() {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) {
+            return ViewProfileScreen(
+              user: widget.user,
+            );
+          },
+        ));
+      },
       child: StreamBuilder(
         stream: APIs.getUserInfo(widget.user),
         builder: (context, snapshot) {
@@ -225,9 +234,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         ? list[0].isOnline
                             ? 'Online'
                             : MyDateUtil.getLastActiveTime(
-                                context: context, lastActive: list[0].lastActive)
+                                context: context,
+                                lastActive: list[0].lastActive)
                         : MyDateUtil.getLastActiveTime(
-                            context: context, lastActive: widget.user.lastActive),
+                            context: context,
+                            lastActive: widget.user.lastActive),
                     style: const TextStyle(
                       fontSize: 13,
                       color: Colors.black54,
