@@ -7,6 +7,7 @@ import 'package:ms_chat/ms_chat/helper/my_date_util.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
 import 'package:ms_chat/ms_chat/model/message.dart';
 import 'package:ms_chat/ms_chat/screen/chat_screen.dart';
+import 'package:ms_chat/ms_chat/widgets/dialogs/profile_dialog.dart';
 
 class ChatUserCard extends StatefulWidget {
   final ChatUser user;
@@ -61,16 +62,24 @@ class _ChatUserCardState extends State<ChatUserCard> {
                 // leading: const CircleAvatar(
                 //   child: Icon(Icons.person),
                 // ),
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    mq.height * 0.3,
-                  ),
-                  child: CachedNetworkImage(
-                    width: mq.height * 0.055,
-                    height: mq.height * 0.055,
-                    imageUrl: widget.user.image,
-                    errorWidget: (context, url, error) => const CircleAvatar(
-                      child: Icon(CupertinoIcons.person),
+                leading: InkWell(
+                  onTap: (){
+                    showDialog(context: context, builder: (context) {
+                      return   ProfileDialog(user: widget.user,);
+                    },);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      mq.height * 0.3,
+                    ),
+                    child: CachedNetworkImage(
+                      width: mq.height * 0.055,
+                      height: mq.height * 0.055,
+                      fit: BoxFit.cover,
+                      imageUrl: widget.user.image,
+                      errorWidget: (context, url, error) => const CircleAvatar(
+                        child: Icon(CupertinoIcons.person),
+                      ),
                     ),
                   ),
                 ),

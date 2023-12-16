@@ -52,6 +52,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  //for adding some space
                   SizedBox(
                     width: mq.width,
                     height: mq.height * .05,
