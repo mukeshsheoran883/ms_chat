@@ -42,7 +42,10 @@ class APIs {
 
   //for creating a new user
   static Future<void> createUser() async {
-    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    final time = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
     final chatUser = ChatUser(
       image: user.photoURL.toString(),
       name: user.displayName.toString(),
@@ -55,8 +58,8 @@ class APIs {
       pushToken: '',
     );
     return await fireStore.collection('users').doc(user.uid).set(
-          chatUser.toJson(),
-        );
+      chatUser.toJson(),
+    );
   }
 
   // for getting all users from fireStore database
@@ -64,9 +67,9 @@ class APIs {
     return fireStore
         .collection('users')
         .where(
-          'id',
-          isNotEqualTo: user.uid,
-        )
+      'id',
+      isNotEqualTo: user.uid,
+    )
         .snapshots();
   }
 
@@ -83,14 +86,16 @@ class APIs {
   // update profile picture of user
   static Future<void> updateProfilePicture(File file) async {
     //getting image file extension
-    final ext = file.path.split('.').last;
+    final ext = file.path
+        .split('.')
+        .last;
     log(
       'Extension: $ext',
     );
     //storage file ref with path
     final ref = storage.ref().child(
-          'profile_pictures/${user.uid}.$ext',
-        );
+      'profile_pictures/${user.uid}.$ext',
+    );
     //uploading image
     await ref
         .putFile(
@@ -98,7 +103,7 @@ class APIs {
       SettableMetadata(contentType: 'image/$ext'),
     )
         .then(
-      (p0) {
+          (p0) {
         log('Data Transferred : ${p0.bytesTransferred / 1000} kb');
       },
     );
@@ -111,15 +116,38 @@ class APIs {
     );
   }
 
+  // for getting specific user ingo
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
+    return fireStore
+        .collection('users')
+        .where(
+      'id',
+      isEqualTo: chatUser.id,
+    )
+        .snapshots();
+  }
+
+  // update online or last active status of user
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    fireStore
+        .collection('users')
+        .doc(user.uid).update({'is_online': isOnline, 'last_active': DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString()});
+  }
+
   /// ******* Chat Screen Related APIs ********
 
 //chats (collection) --> conversation_id (doc) --> messages (collection) --> message(doc)
 
   // useful for getting conversation id
 
-  static String getConversationId(String id) => user.uid.hashCode <= id.hashCode
-      ? "${user.uid}_$id"
-      : '${id}_${user.uid}';
+  static String getConversationId(String id) =>
+      user.uid.hashCode <= id.hashCode
+          ? "${user.uid}_$id"
+          : '${id}_${user.uid}';
 
   // for getting all messages of a specific conversation  from fireStore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
@@ -131,9 +159,13 @@ class APIs {
   }
 
   // for sending message
-  static Future<void> sendMessage(ChatUser chatUser, String msg, Type type) async {
+  static Future<void> sendMessage(ChatUser chatUser, String msg,
+      Type type) async {
     //message sending time (also used as id)
-    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    final time = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
 
     // message to send
     final Message message = Message(
@@ -153,10 +185,13 @@ class APIs {
   static Future<void> updateMessageReadStatus(Message message) async {
     fireStore
         .collection(
-          'chats/${getConversationId(message.fromId)}/messages/',
-        )
+      'chats/${getConversationId(message.fromId)}/messages/',
+    )
         .doc(message.sent)
-        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+        .update({'read': DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString()});
   }
 
   // get only last message of a specific chat
@@ -172,11 +207,15 @@ class APIs {
   //send chat image
   static Future<void> sendChatImage(ChatUser chatUser, File file) async {
     //getting image file extension
-    final ext = file.path.split('.').last;
+    final ext = file.path
+        .split('.')
+        .last;
 
     //storage file ref with path
     final ref = storage.ref().child(
-      'images/${getConversationId(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext',
+      'images/${getConversationId(chatUser.id)}/${DateTime
+          .now()
+          .millisecondsSinceEpoch}.$ext',
     );
     //uploading image
     await ref
