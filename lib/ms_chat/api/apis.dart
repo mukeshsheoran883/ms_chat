@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
 import 'package:ms_chat/ms_chat/model/message.dart';
 
@@ -27,7 +29,7 @@ class APIs {
   // for accessing firebase messaging (Push Notification)
   static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
 
-  // for getting firebase messaging (Push Notification)
+  // for getting firebase messaging token
   static Future<void> getFirebaseMessagingToken() async {
     await fMessaging.requestPermission();
     await fMessaging.getToken().then((t) {
@@ -36,6 +38,28 @@ class APIs {
         log('Push Token : $t');
       }
     });
+  }
+
+  //for sending push notification
+  static Future<void> sendPushNotification(
+      ChatUser chatUser, String msg) async {
+    try {
+      final body = {
+        "to": chatUser.pushToken,
+        "notification": {"title": chatUser.name, "body": msg}
+      };
+      var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader:
+                'Key=AAAAv1sdGVk:APA91bE9X5f_SAZryH_wAAIpnD9LDxeWIvi_Vqcwl4cyuBzD7B21PaFImQaaUQZp3WOTgfcT5-b5jaY9ack5HkbhRtRiKxasYJqS6WDrQYA8xhWduifdLEA_q9WnxlmRS5q3eBN6-ai9'
+          },
+          body: jsonEncode(body));
+      log('Response status: ${res.statusCode}');
+      log('Response body: ${res.body}');
+    } catch (e) {
+      log('\nsendPushNotificationE: $e');
+    }
   }
 
   // for checking if user exists or not ?
@@ -186,7 +210,8 @@ class APIs {
     final ref = fireStore.collection(
       'chats/${getConversationId(chatUser.id)}/messages/',
     );
-    await ref.doc(time).set(message.toJson());
+    await ref.doc(time).set(message.toJson()).then((value) =>
+        sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
   }
 
   // update read status of message

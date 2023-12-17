@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # For calling RestAPIs
+  http: ^1.1.2
 
   # For accessing firebase firebase Storage (or uploading files)
   firebase_messaging: ^14.7.9
