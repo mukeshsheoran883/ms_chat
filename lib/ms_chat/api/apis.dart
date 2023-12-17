@@ -31,11 +31,29 @@ class APIs {
 
   // for getting firebase messaging token
   static Future<void> getFirebaseMessagingToken() async {
-    await fMessaging.requestPermission();
+    await fMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
     await fMessaging.getToken().then((t) {
       if (t != null) {
         me.pushToken = t;
         log('Push Token : $t');
+      }
+    });
+
+    // for handling foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Got a message whilst in the foreground!');
+      log('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        log('Message also contained a notification: ${message.notification}');
       }
     });
   }
@@ -46,7 +64,14 @@ class APIs {
     try {
       final body = {
         "to": chatUser.pushToken,
-        "notification": {"title": chatUser.name, "body": msg}
+        "notification": {
+          "title": chatUser.name,
+          "body": msg,
+          "android_channel_id": "chats",
+        },
+        "data": {
+          "some_data" : "User ID: ${me.id}",
+        },
       };
       var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: {

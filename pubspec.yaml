@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # For creating notification channel
+  flutter_notification_channel: ^2.0.0
+
   # For calling RestAPIs
   http: ^1.1.2
 
