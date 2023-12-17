@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # For accessing firebase firebase Storage (or uploading files)
+  firebase_messaging: ^14.7.9
+
   # For showing Emojis
   emoji_picker_flutter: ^1.6.3
 

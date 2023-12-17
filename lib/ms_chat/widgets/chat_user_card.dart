@@ -63,10 +63,15 @@ class _ChatUserCardState extends State<ChatUserCard> {
                 //   child: Icon(Icons.person),
                 // ),
                 leading: InkWell(
-                  onTap: (){
-                    showDialog(context: context, builder: (context) {
-                      return   ProfileDialog(user: widget.user,);
-                    },);
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ProfileDialog(
+                          user: widget.user,
+                        );
+                      },
+                    );
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(
@@ -89,13 +94,10 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
                 //last message
                 subtitle: Text(
-                  _message != null ?
-
-                      _message!.type == Type.image ?
-                          'image'
-                          :
-                  _message!.msg
-
+                  _message != null
+                      ? _message!.type == Type.image
+                          ? 'image'
+                          : _message!.msg
                       : widget.user.about,
                   maxLines: 1,
                 ),
