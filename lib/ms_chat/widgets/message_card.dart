@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
+import 'package:ms_chat/ms_chat/helper/dialogs.dart';
 import 'package:ms_chat/ms_chat/helper/my_date_util.dart';
 import 'package:ms_chat/ms_chat/model/message.dart';
 
@@ -208,7 +210,8 @@ class _MessageCardState extends State<MessageCard> {
             ),
 
             widget.message.type == Type.text
-                ? // copy option
+                ?
+                // copy option
                 _OptionItem(
                     icon: const Icon(
                       Icons.copy_all_rounded,
@@ -216,62 +219,73 @@ class _MessageCardState extends State<MessageCard> {
                       size: 26,
                     ),
                     name: 'Copy Text',
-                    onTap: () {})
+                    onTap: () async {
+                      await Clipboard.setData(ClipboardData(
+                        text: widget.message.msg,
+                      )).then((ms) {
+                        Navigator.pop(context);
+                        Dialogs.showSnackbar(context, 'Text Copied');
+                      });
+                    })
                 :
-            // save option
-            _OptionItem(
-                icon: const Icon(
-                  Icons.download_rounded,
-                  color: Colors.blue,
-                  size: 26,
-                ),
-                name: 'Save Image',
-                onTap: () {}),
+                // save option
+                _OptionItem(
+                    icon: const Icon(
+                      Icons.download_rounded,
+                      color: Colors.blue,
+                      size: 26,
+                    ),
+                    name: 'Save Image',
+                    onTap: () {}),
 
-                //separator or divider
-                Divider(
-                    color: Colors.black54,
-                    endIndent: mq.width * .04,
-                    indent: mq.width * .04,
-                  ),
+            //separator or divider
+            Divider(
+              color: Colors.black54,
+              endIndent: mq.width * .04,
+              indent: mq.width * .04,
+            ),
 
             // edit option
-            if(widget.message.type == Type.text  && isMe)
-            _OptionItem(
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.blue,
-                  size: 26,
-                ),
-                name: 'Edit Message',
-                onTap: () {}),
+            if (widget.message.type == Type.text && isMe)
+              _OptionItem(
+                  icon: const Icon(
+                    Icons.edit,
+                    color: Colors.blue,
+                    size: 26,
+                  ),
+                  name: 'Edit Message',
+                  onTap: () {}),
 
             //separator or divider
-            if(widget.message.type == Type.text && isMe)
-            Divider(
-              color: Colors.black54,
-              endIndent: mq.width * .04,
-              indent: mq.width * .04,
-            ),
+            if (widget.message.type == Type.text && isMe)
+              Divider(
+                color: Colors.black54,
+                endIndent: mq.width * .04,
+                indent: mq.width * .04,
+              ),
 
             // delete option
-            if(isMe)
-            _OptionItem(
-                icon: const Icon(
-                  Icons.delete_forever,
-                  color: Colors.red,
-                  size: 26,
-                ),
-                name: 'Delete Message',
-                onTap: () {}),
+            if (isMe)
+              _OptionItem(
+                  icon: const Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: 26,
+                  ),
+                  name: 'Delete Message',
+                  onTap: () async{
+                   await APIs.deleteMessage(widget.message).then((value) {
+                     Navigator.pop(context);
+                   });
+                  }),
 
             //separator or divider
-            if( isMe)
-            Divider(
-              color: Colors.black54,
-              endIndent: mq.width * .04,
-              indent: mq.width * .04,
-            ),
+            if (isMe)
+              Divider(
+                color: Colors.black54,
+                endIndent: mq.width * .04,
+                indent: mq.width * .04,
+              ),
 
             // sent time
             _OptionItem(
@@ -279,7 +293,8 @@ class _MessageCardState extends State<MessageCard> {
                   Icons.remove_red_eye,
                   color: Colors.blue,
                 ),
-                name: 'Sent At: ',
+                name:
+                    'Sent At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
                 onTap: () {}),
 
             //separator or divider
@@ -295,7 +310,9 @@ class _MessageCardState extends State<MessageCard> {
                   Icons.remove_red_eye,
                   color: Colors.green,
                 ),
-                name: 'Read At: ',
+                name: widget.message.read.isEmpty
+                    ? 'Read At: Not seen yet'
+                    : 'Read At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)}',
                 onTap: () {}),
           ],
         );
@@ -315,7 +332,7 @@ class _OptionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onTap,
+      onTap: onTap,
       child: Padding(
         padding: EdgeInsets.only(
             left: mq.width * .05,

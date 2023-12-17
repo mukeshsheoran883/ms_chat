@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     APIs.getSelfInfo();
 
-
     super.initState();
 
     // for updating user active status according to lifecycle events

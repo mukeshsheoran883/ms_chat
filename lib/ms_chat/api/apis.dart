@@ -70,7 +70,7 @@ class APIs {
           "android_channel_id": "chats",
         },
         "data": {
-          "some_data" : "User ID: ${me.id}",
+          "some_data": "User ID: ${me.id}",
         },
       };
       var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
@@ -282,5 +282,18 @@ class APIs {
     // updating image in fireStore database
     final imageUrl = await ref.getDownloadURL();
     await sendMessage(chatUser, imageUrl, Type.image);
+  }
+
+  // delete message
+  static Future<void> deleteMessage(Message message) async{
+   await  fireStore
+        .collection(
+      'chats/${getConversationId(message.toId)}/messages/',
+    )
+        .doc(message.sent)
+        .delete();
+    if(message.type == Type.image) {
+      await storage.refFromURL(message.msg).delete();
+    }
   }
 }

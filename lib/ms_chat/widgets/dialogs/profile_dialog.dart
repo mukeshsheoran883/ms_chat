@@ -36,8 +36,7 @@ class ProfileDialog extends StatelessWidget {
                   height: mq.height * 0.28,
                   fit: BoxFit.cover,
                   imageUrl: user.image,
-                  errorWidget: (context, url, error) =>
-                  const CircleAvatar(
+                  errorWidget: (context, url, error) => const CircleAvatar(
                     child: Icon(CupertinoIcons.person),
                   ),
                 ),
@@ -50,8 +49,9 @@ class ProfileDialog extends StatelessWidget {
               left: mq.width * .04,
               width: mq.width * .6,
               child: Text(
-                user.name ,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                user.name,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
 
@@ -62,9 +62,11 @@ class ProfileDialog extends StatelessWidget {
                 child: MaterialButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return ViewProfileScreen(user: user);
-                    },));
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return ViewProfileScreen(user: user);
+                      },
+                    ));
                   },
                   minWidth: 0,
                   padding: const EdgeInsets.all(0),
