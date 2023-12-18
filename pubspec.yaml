@@ -31,11 +31,14 @@ dependencies:
   flutter:
     sdk: flutter
 
+
+  #For storing images into gallery
+  gallery_saver: ^2.3.2
   # For creating notification channel
   flutter_notification_channel: ^2.0.0
 
   # For calling RestAPIs
-  http: ^1.1.2
+  http: ^0.13.2
 
   # For accessing firebase firebase Storage (or uploading files)
   firebase_messaging: ^14.7.9
@@ -84,6 +87,8 @@ flutter_launcher_icons:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
 
 
 

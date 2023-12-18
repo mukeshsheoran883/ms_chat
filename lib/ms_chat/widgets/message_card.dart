@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
 import 'package:ms_chat/ms_chat/helper/dialogs.dart';
@@ -236,7 +237,22 @@ class _MessageCardState extends State<MessageCard> {
                       size: 26,
                     ),
                     name: 'Save Image',
-                    onTap: () {}),
+                    onTap: () async {
+                      try {
+                        log('Image Url: ${widget.message.msg}');
+                        await GallerySaver.saveImage(widget.message.msg,
+                                albumName: 'Ms Chat')
+                            .then((success) {
+                          Navigator.pop(context);
+                          if (success != null && success) {
+                            Dialogs.showSnackbar(
+                                context, 'Image Successfully Saved');
+                          }
+                        });
+                      } catch (e) {
+                        log('ErrorWhileSavingImg: $e');
+                      }
+                    }),
 
             //separator or divider
             Divider(
@@ -273,10 +289,10 @@ class _MessageCardState extends State<MessageCard> {
                     size: 26,
                   ),
                   name: 'Delete Message',
-                  onTap: () async{
-                   await APIs.deleteMessage(widget.message).then((value) {
-                     Navigator.pop(context);
-                   });
+                  onTap: () async {
+                    await APIs.deleteMessage(widget.message).then((value) {
+                      Navigator.pop(context);
+                    });
                   }),
 
             //separator or divider
