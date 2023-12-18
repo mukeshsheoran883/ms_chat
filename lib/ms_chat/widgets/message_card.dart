@@ -270,7 +270,10 @@ class _MessageCardState extends State<MessageCard> {
                     size: 26,
                   ),
                   name: 'Edit Message',
-                  onTap: () {}),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showMessageUpdateDialog();
+                  }),
 
             //separator or divider
             if (widget.message.type == Type.text && isMe)
@@ -335,8 +338,74 @@ class _MessageCardState extends State<MessageCard> {
       },
     );
   }
+
+  //dialog for updating message content
+  void _showMessageUpdateDialog() {
+    String updateMsg = widget.message.msg;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding : const EdgeInsets.only(left: 24,right: 24,top: 20,bottom: 10,),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
+            children: [
+              Icon(
+                Icons.message,
+                color: Colors.blue,
+                size: 28,
+              ),
+              Text(' Update Message'),
+            ],
+          ),
+          // content
+          content: TextFormField(
+            initialValue: updateMsg,
+            maxLines: null,
+            onChanged: (value) => updateMsg = value,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+          ),
+          actions: [
+
+            // cancel button
+            MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.blue, fontSize: 16),
+              ),
+            ),
+
+            // update button
+            MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+                APIs.updateMessage(widget.message, updateMsg);
+              },
+              child: const Text(
+                'Update',
+                style: TextStyle(color: Colors.blue, fontSize: 16),
+              ),
+            ),
+
+
+          ],
+        );
+      },
+    );
+  }
 }
 
+// custom options card (for copy, edit, delete, etc)
 class _OptionItem extends StatelessWidget {
   final Icon icon;
   final String name;
