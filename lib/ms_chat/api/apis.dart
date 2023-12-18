@@ -73,13 +73,15 @@ class APIs {
           "some_data": "User ID: ${me.id}",
         },
       };
-      var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-          headers: {
-            HttpHeaders.contentTypeHeader: 'application/json',
-            HttpHeaders.authorizationHeader:
-                'Key=AAAAv1sdGVk:APA91bE9X5f_SAZryH_wAAIpnD9LDxeWIvi_Vqcwl4cyuBzD7B21PaFImQaaUQZp3WOTgfcT5-b5jaY9ack5HkbhRtRiKxasYJqS6WDrQYA8xhWduifdLEA_q9WnxlmRS5q3eBN6-ai9'
-          },
-          body: jsonEncode(body));
+      var res = await post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader:
+              'Key=AAAAv1sdGVk:APA91bE9X5f_SAZryH_wAAIpnD9LDxeWIvi_Vqcwl4cyuBzD7B21PaFImQaaUQZp3WOTgfcT5-b5jaY9ack5HkbhRtRiKxasYJqS6WDrQYA8xhWduifdLEA_q9WnxlmRS5q3eBN6-ai9'
+        },
+        body: jsonEncode(body),
+      );
       log('Response status: ${res.statusCode}');
       log('Response body: ${res.body}');
     } catch (e) {
@@ -92,19 +94,52 @@ class APIs {
     return (await fireStore.collection('users').doc(user.uid).get()).exists;
   }
 
+  // for adding an chat user for our conversation
+  static Future<bool> addChatUser(String email) async {
+    final data = await fireStore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    log('data: ${data.docs}');
+
+    if (data.docs.isNotEmpty && data.docs.first.id != user.uid) {
+      //user exists
+
+      log('user exists: ${data.docs.first.data()}');
+
+      fireStore
+          .collection('users')
+          .doc(user.uid)
+          .collection('my_users')
+          .doc(data.docs.first.id)
+          .set({});
+
+      return true;
+    } else {
+      //user doesn't exists
+
+      return false;
+    }
+  }
+
   // for getting current user info
   static Future<void> getSelfInfo() async {
-    await fireStore.collection('users').doc(user.uid).get().then((user) async {
-      if (user.exists) {
-        me = ChatUser.fromJson(user.data()!);
-        await getFirebaseMessagingToken();
-        //for setting user status to active
-        APIs.updateActiveStatus(true);
-        log("My Data: ${user.data()}");
-      } else {
-        await createUser().then((value) => getSelfInfo());
-      }
-    });
+    await fireStore.collection('users').doc(user.uid).get().then(
+      (user) async {
+        if (user.exists) {
+          me = ChatUser.fromJson(user.data()!);
+          await getFirebaseMessagingToken();
+          //for setting user status to active
+          APIs.updateActiveStatus(true);
+          log("My Data: ${user.data()}");
+        } else {
+          await createUser().then(
+            (value) => getSelfInfo(),
+          );
+        }
+      },
+    );
   }
 
   //for creating a new user
@@ -192,11 +227,13 @@ class APIs {
 
   // update online or last active status of user
   static Future<void> updateActiveStatus(bool isOnline) async {
-    fireStore.collection('users').doc(user.uid).update({
-      'is_online': isOnline,
-      'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
-      'push_token': me.pushToken,
-    });
+    fireStore.collection('users').doc(user.uid).update(
+      {
+        'is_online': isOnline,
+        'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+        'push_token': me.pushToken,
+      },
+    );
   }
 
   /// ******* Chat Screen Related APIs ********
@@ -235,8 +272,10 @@ class APIs {
     final ref = fireStore.collection(
       'chats/${getConversationId(chatUser.id)}/messages/',
     );
-    await ref.doc(time).set(message.toJson()).then((value) =>
-        sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
+    await ref.doc(time).set(message.toJson()).then(
+          (value) =>
+              sendPushNotification(chatUser, type == Type.text ? msg : 'image'),
+        );
   }
 
   // update read status of message
@@ -246,7 +285,11 @@ class APIs {
           'chats/${getConversationId(message.fromId)}/messages/',
         )
         .doc(message.sent)
-        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+        .update(
+      {
+        'read': DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+    );
   }
 
   // get only last message of a specific chat
@@ -285,28 +328,25 @@ class APIs {
   }
 
   // delete message
-  static Future<void> deleteMessage(Message message) async{
-   await  fireStore
+  static Future<void> deleteMessage(Message message) async {
+    await fireStore
         .collection(
-      'chats/${getConversationId(message.toId)}/messages/',
-    )
+          'chats/${getConversationId(message.toId)}/messages/',
+        )
         .doc(message.sent)
         .delete();
-    if(message.type == Type.image) {
+    if (message.type == Type.image) {
       await storage.refFromURL(message.msg).delete();
     }
   }
 
   // delete message
-  static Future<void> updateMessage(Message message , String updateMsg) async{
-   await  fireStore
+  static Future<void> updateMessage(Message message, String updateMsg) async {
+    await fireStore
         .collection(
-      'chats/${getConversationId(message.toId)}/messages/',
-    )
+          'chats/${getConversationId(message.toId)}/messages/',
+        )
         .doc(message.sent)
-        .update({'msg' : updateMsg});
-   
+        .update({'msg': updateMsg});
   }
-
-
 }

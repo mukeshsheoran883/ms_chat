@@ -347,7 +347,12 @@ class _MessageCardState extends State<MessageCard> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          contentPadding : const EdgeInsets.only(left: 24,right: 24,top: 20,bottom: 10,),
+          contentPadding: const EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 20,
+            bottom: 10,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -373,7 +378,6 @@ class _MessageCardState extends State<MessageCard> {
             ),
           ),
           actions: [
-
             // cancel button
             MaterialButton(
               onPressed: () {
@@ -396,8 +400,6 @@ class _MessageCardState extends State<MessageCard> {
                 style: TextStyle(color: Colors.blue, fontSize: 16),
               ),
             ),
-
-
           ],
         );
       },

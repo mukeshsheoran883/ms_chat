@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ms_chat/main.dart';
 import 'package:ms_chat/ms_chat/api/apis.dart';
+import 'package:ms_chat/ms_chat/helper/dialogs.dart';
 import 'package:ms_chat/ms_chat/model/chat_user.dart';
 import 'package:ms_chat/ms_chat/screen/profile_screen.dart';
 import 'package:ms_chat/ms_chat/widgets/chat_user_card.dart';
@@ -81,17 +81,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         // search logic
                         _searchList.clear();
                         for (var i in _list) {
-                          if (i.name
-                                  .toLowerCase()
-                                  .contains(val.toLowerCase()) ||
-                              i.email
-                                  .toLowerCase()
-                                  .contains(val.toLowerCase())) {
+                          if (i.name.toLowerCase().contains(
+                                    val.toLowerCase(),
+                                  ) ||
+                              i.email.toLowerCase().contains(
+                                    val.toLowerCase(),
+                                  )) {
                             _searchList.add(i);
                           }
-                          setState(() {
-                            _searchList;
-                          });
+                          setState(
+                            () {
+                              _searchList;
+                            },
+                          );
                         }
                       },
                     )
@@ -103,9 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    setState(() {
-                      _isSearching = !_isSearching;
-                    });
+                    setState(
+                      () {
+                        _isSearching = !_isSearching;
+                      },
+                    );
                   },
                   icon: Icon(
                     _isSearching
@@ -137,9 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
             floatingActionButton: Padding(
               padding: const EdgeInsets.all(16.0),
               child: FloatingActionButton(
-                onPressed: () async {
-                  await APIs.auth.signOut();
-                  await GoogleSignIn().signOut();
+                onPressed: () {
+                  _addChatUserDialog();
                 },
                 child: const Icon(Icons.add_comment),
               ),
@@ -157,7 +160,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   case ConnectionState.done:
                     final data = snapshot.data?.docs;
                     _list = data
-                            ?.map((e) => ChatUser.fromJson(e.data()))
+                            ?.map(
+                              (e) => ChatUser.fromJson(
+                                e.data(),
+                              ),
+                            )
                             .toList() ??
                         [];
 
@@ -173,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? _searchList[index]
                                 : _list[index],
                           );
-                          // return Text('Name:${list[index]} ');
                         },
                       );
                     } else {
@@ -189,6 +195,81 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // for adding new chat user
+  void _addChatUserDialog() {
+    String email = '';
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        contentPadding:
+            const EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+
+        //title
+        title: const Row(
+          children: [
+            Icon(
+              Icons.person_add,
+              color: Colors.blue,
+              size: 28,
+            ),
+            Text('  Add User'),
+          ],
+        ),
+
+        //content
+        content: TextFormField(
+          maxLines: null,
+          onChanged: (value) => email = value,
+          decoration: InputDecoration(
+            hintText: 'Email Id',
+            prefixIcon: const Icon(Icons.email, color: Colors.blue),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+
+        //actions
+        actions: [
+          //cancel button
+          MaterialButton(
+              onPressed: () {
+                //hide alert dialog
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.blue, fontSize: 16))),
+
+          //add button
+          MaterialButton(
+            onPressed: () async {
+              //hide alert dialog
+              Navigator.pop(context);
+              if (email.isNotEmpty) {
+                await APIs.addChatUser(email).then(
+                  (value) {
+                    if (!value) {
+                      Dialogs.showSnackbar(context, 'User does not Exists!');
+                    }
+                  },
+                );
+              }
+            },
+            child: const Text(
+              'Add',
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+        ],
       ),
     );
   }
