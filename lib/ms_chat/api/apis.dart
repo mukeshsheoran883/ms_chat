@@ -31,19 +31,12 @@ class APIs {
 
   // for getting firebase messaging token
   static Future<void> getFirebaseMessagingToken() async {
-    await fMessaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    await fMessaging.requestPermission();
+
     await fMessaging.getToken().then((t) {
       if (t != null) {
         me.pushToken = t;
-        log('Push Token : $t');
+        log('Push Token: $t');
       }
     });
 
@@ -58,7 +51,8 @@ class APIs {
     });
   }
 
-  //for sending push notification
+
+  // for sending push notification
   static Future<void> sendPushNotification(
       ChatUser chatUser, String msg) async {
     try {
@@ -67,21 +61,20 @@ class APIs {
         "notification": {
           "title": chatUser.name,
           "body": msg,
-          "android_channel_id": "chats",
+          "android_channel_id": "chats"
         },
-        "data": {
-          "some_data": "User ID: ${me.id}",
-        },
+        // "data": {
+        //   "some_data": "User ID: ${me.id}",
+        // },
       };
-      var res = await post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-          HttpHeaders.contentTypeHeader: 'application/json',
-          HttpHeaders.authorizationHeader:
-              'Key=AAAAv1sdGVk:APA91bE9X5f_SAZryH_wAAIpnD9LDxeWIvi_Vqcwl4cyuBzD7B21PaFImQaaUQZp3WOTgfcT5-b5jaY9ack5HkbhRtRiKxasYJqS6WDrQYA8xhWduifdLEA_q9WnxlmRS5q3eBN6-ai9'
-        },
-        body: jsonEncode(body),
-      );
+
+      var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader:
+                'Key=AAAAv1sdGVk:APA91bE9X5f_SAZryH_wAAIpnD9LDxeWIvi_Vqcwl4cyuBzD7B21PaFImQaaUQZp3WOTgfcT5-b5jaY9ack5HkbhRtRiKxasYJqS6WDrQYA8xhWduifdLEA_q9WnxlmRS5q3eBN6-ai9'
+          },
+          body: jsonEncode(body));
       log('Response status: ${res.statusCode}');
       log('Response body: ${res.body}');
     } catch (e) {
@@ -161,15 +154,36 @@ class APIs {
         );
   }
 
-  // for getting all users from fireStore database
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+  // for getting id's of known users from fireStore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getMyUsersId() {
     return fireStore
         .collection('users')
-        .where(
-          'id',
-          isNotEqualTo: user.uid,
-        )
+        .doc(user.uid)
+        .collection('my_users')
         .snapshots();
+  }
+
+// for getting all users from fireStore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers(
+      List<String> userIds) {
+    log('\nUserIds: $userIds');
+    return fireStore
+        .collection('users')
+        .where('id', whereIn: userIds.isEmpty ? [''] : userIds)
+        .snapshots();
+  }
+
+  // for adding an user to my user when first message is send
+  static Future<void> sendFirstMessage(
+      ChatUser chatUser, String msg, Type type) async {
+    await fireStore
+        .collection('users')
+        .doc(chatUser.id)
+        .collection('my_users')
+        .doc(user.uid)
+        .set({}).then(
+      (value) => sendMessage(chatUser, msg, type),
+    );
   }
 
   // for updating user information
@@ -213,7 +227,7 @@ class APIs {
     );
   }
 
-  // for getting specific user ingo
+  // for getting specific user info
   static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
       ChatUser chatUser) {
     return fireStore
